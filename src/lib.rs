@@ -151,8 +151,9 @@ impl<'a> OsState<'a> {
     }
 
     /// If `path` is empty, change the working directory to the root.  Otherwise change the
-    /// working directory to the subdirectory given by `path`.  (There is no notion of `..`:
-    /// `path` must be a valid sequence of component names.)
+    /// working directory to the subdirectory given by `path` relative to the current working
+    /// directory.  (There is no notion of `.` or `..`: `path` must be a valid sequence of
+    /// component names.)
     ///
     /// # Examples
     ///
@@ -162,9 +163,10 @@ impl<'a> OsState<'a> {
     /// s.mkdir("a").unwrap();
     /// s.chdir(&["a"]).unwrap();
     /// s.mkdir("b").unwrap();
+    /// s.chdir(&["b"]).unwrap();
     /// s.mkdir("c").unwrap();
     /// s.chdir(&[]).unwrap();
-    /// assert_eq!(&s.paths().unwrap(), &["/a/b/", "/a/c/"]);
+    /// assert_eq!(&s.paths().unwrap(), &["/a/b/c/"]);
     /// ```
     ///
     /// # Errors
