@@ -1,5 +1,13 @@
 //! Directory Tree Simulator: Provides a directory tree structure and an operating system stub
 //! structure to interact with it.
+//!
+//! ## Paths
+//!
+//! A directory can be specified by a *path*: either an *absolute path* from the root or a
+//! *relative path* from the current working directory. In this library, paths are normally
+//! specified as sequences of path *segments*: each path segment specifies a "next" directory
+//! along the path. For conventional reasons, a directory name / path segment must be valid UTF-8
+//! and is not allowed to contain a `/` character.
 
 // Bart Massey 2021
 
@@ -41,6 +49,7 @@ pub struct DTree<'a> {
 }
 
 /// Operating system state: the directory tree and the current working directory.
+/// The current working directory is represented as a path from the root.
 #[derive(Debug, Clone, Default)]
 pub struct OsState<'a> {
     pub dtree: DTree<'a>,
@@ -123,8 +132,12 @@ impl<'a> DTree<'a> {
         todo!()
     }
 
-    /// Produce a list of the paths to each reachable leaf, in no particular order.  Path
-    /// components are prefixed by `/`.
+    /// Produce a list of the paths to each reachable leaf, in no particular order.
+    ///
+    /// Since the primary use of this function is for user-readable output, the choice was made to
+    /// represent each path as a `String` rather than a `Vec` of path segments. A path string
+    /// returned by this function will have `/` at the beginning, at the end, and separating each
+    /// segment in the path.
     ///
     /// # Examples
     ///
@@ -134,9 +147,10 @@ impl<'a> DTree<'a> {
     /// dt.mkdir("a").unwrap();
     /// dt.with_subdir_mut(&["a"], |dt| dt.mkdir("b").unwrap()).unwrap();
     /// dt.with_subdir_mut(&["a"], |dt| dt.mkdir("c").unwrap()).unwrap();
+    /// dt.with_subdir_mut(&["a", "b"], |dt| dt.mkdir("d").unwrap()).unwrap();
     /// let mut paths = dt.paths();
     /// paths.sort();
-    /// assert_eq!(&paths, &["/a/b/", "/a/c/"]);
+    /// assert_eq!(&paths, &["/a/b/d/", "/a/c/"]);
     /// ```
     pub fn paths(&self) -> Vec<String> {
         todo!()
@@ -167,6 +181,8 @@ impl<'a> OsState<'a> {
     /// s.mkdir("c").unwrap();
     /// s.chdir(&[]).unwrap();
     /// assert_eq!(&s.paths().unwrap(), &["/a/b/c/"]);
+    /// s.chdir(&["a", "b", "c"]).unwrap();
+    /// assert_eq!(s.paths().unwrap(), &["/"]);
     /// ```
     ///
     /// # Errors
@@ -189,7 +205,7 @@ impl<'a> OsState<'a> {
     }
 
     /// Produce a list of the paths from the working directory to each reachable leaf, in no
-    /// particular order.  Path components are separated by `/`.
+    /// particular order. See [DTree::paths] for details.
     ///
     /// # Errors
     ///
