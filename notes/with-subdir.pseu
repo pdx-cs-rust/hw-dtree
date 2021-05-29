@@ -1,0 +1,12 @@
+# also with_subdir_mut()
+with_subdir(dt, path, f):
+    find_child(dt, name):
+        for d in dt.children
+            if d.name == name
+                return d.subdir
+        fail
+
+    for p in path
+        dt <- find_child(dt, name)
+
+    return f(dt)
