@@ -1,11 +1,11 @@
 paths(dree dt):
     # base case
-    if dt is empty
+    if dt.children is empty
         return ["/"]
 
     # recursive case
     result <- []
-    for each dent d in dt
+    for each dent d in dt.children
         subpaths <- paths(d.subdir)
         for each path sp in subpaths
              append to result "/" + d.name + sp

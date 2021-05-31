@@ -6,7 +6,7 @@ with_subdir(dt, path, f):
                 return d.subdir
         fail
 
-    for p in path
+    for name in path
         dt <- find_child(dt, name)
 
     return f(dt)
